@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,10 +13,12 @@ import org.w3c.dom.Text;
 
 public class CheatActivity extends AppCompatActivity {
 
+    private static final String TAG = "CheatActivity";
     private static final String EXTRA_ANSWER_IS_TRUE = "com.trungbao.geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "com.trungbao.geoquiz.answer_shown";
 
     private boolean mAnswerIsTrue;
+    private boolean mIsAnswerShown;
     private TextView mAnswerTextView;
     private Button mShowAnswer;
 
@@ -30,9 +33,26 @@ public class CheatActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i(TAG, "onSaveInstanceState");
+        savedInstanceState.putBoolean(EXTRA_ANSWER_SHOWN, mIsAnswerShown);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
+
+        if (savedInstanceState != null) {
+            mIsAnswerShown = savedInstanceState.getBoolean(EXTRA_ANSWER_SHOWN);
+        } else {
+            mIsAnswerShown = false;
+        }
+
+        if (mIsAnswerShown) {
+            setAnswerShownResult(true);
+        }
 
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
@@ -43,6 +63,7 @@ public class CheatActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
+                mIsAnswerShown = true;
                 if (mAnswerIsTrue) {
                     mAnswerTextView.setText(R.string.true_button);
                 } else {

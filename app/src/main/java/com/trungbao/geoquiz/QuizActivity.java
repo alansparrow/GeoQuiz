@@ -11,11 +11,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
     private static final String ANSWER_SHOWN = "com.trungbao.geoquiz.answer_shown";
+    private static final String CHEATED_QUESTIONS = "com.trungbao.geoquiz.cheated_questions";
     private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mTrueButton;
@@ -23,6 +28,8 @@ public class QuizActivity extends AppCompatActivity {
     private Button mNextButton;
     private Button mCheatButton;
     private TextView mQuestionTextView;
+
+    private Set<Integer> mCheatedQuestions = new HashSet<Integer>();
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_oceans, true),
@@ -45,7 +52,7 @@ public class QuizActivity extends AppCompatActivity {
 
         int messageResId = 0;
 
-        if (mIsCheater) {
+        if (mIsCheater || mCheatedQuestions.contains(mCurrentIndex)) {
             messageResId = R.string.judgment_toast;
         } else {
             if (userAnswer == correctAnswer) {
@@ -79,6 +86,9 @@ public class QuizActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
             mIsCheater = savedInstanceState.getBoolean(ANSWER_SHOWN);
+
+            ArrayList<Integer> arr = savedInstanceState.getIntegerArrayList(CHEATED_QUESTIONS);
+            mCheatedQuestions = new HashSet<Integer>(arr);
         }
         updateQuestion();
 
@@ -123,6 +133,7 @@ public class QuizActivity extends AppCompatActivity {
                 return;
             }
             mIsCheater = CheatActivity.wasAnswerShown(data);
+            mCheatedQuestions.add(mCurrentIndex);
         }
     }
 
@@ -132,6 +143,14 @@ public class QuizActivity extends AppCompatActivity {
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
         savedInstanceState.putBoolean(ANSWER_SHOWN, mIsCheater);
+
+
+        Integer[] arr = mCheatedQuestions.toArray(new Integer[mCheatButton.getScrollBarSize()]);
+        ArrayList<Integer> arr1 = new ArrayList<Integer>();
+        for (Integer i:arr)
+            arr1.add(i);
+        savedInstanceState.putIntegerArrayList(CHEATED_QUESTIONS, arr1);
+
     }
 
     @Override

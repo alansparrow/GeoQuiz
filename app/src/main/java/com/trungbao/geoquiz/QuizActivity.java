@@ -32,6 +32,8 @@ public class QuizActivity extends AppCompatActivity {
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+//        Log.d(TAG, "Updating question text for question #" + mCurrentIndex,
+//                new Exception());
     }
 
     private void checkAnswer(boolean userAnswer) {
@@ -60,6 +62,7 @@ public class QuizActivity extends AppCompatActivity {
         }
         updateQuestion();
 
+//        mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener(){
 
